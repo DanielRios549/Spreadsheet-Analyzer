@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 from functions import data, month, helpers
 
+folder_key = "folder_path"
+tab_key = "active_tab"
+
 def setConfig(uploaded_file, sheet_name):
     # ---------------------------------------------------------
     # LOAD SELECTED SHEET
@@ -14,10 +17,10 @@ def setConfig(uploaded_file, sheet_name):
             engine="openpyxl"
         )
 
-    except Exception as e:
+    except Exception as err:
 
         st.error(
-            f"Error reading worksheet: {e}"
+            f"Error reading worksheet: {err}"
         )
 
         st.stop()
