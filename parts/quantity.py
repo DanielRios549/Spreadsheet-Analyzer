@@ -31,5 +31,5 @@ def quantityView(data):
 
     st.plotly_chart(
         fig,
-        width=True
+        width='stretch'
     )

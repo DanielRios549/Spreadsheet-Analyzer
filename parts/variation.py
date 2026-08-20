@@ -40,5 +40,5 @@ def variationView(data):
 
     st.plotly_chart(
         fig_variation,
-        width=True
+        width='stretch'
     )

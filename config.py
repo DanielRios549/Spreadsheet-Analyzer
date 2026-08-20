@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
-from functions.data import prepare_data
-from functions.month import detect_month_column, detect_quantity_column
-from functions.helpers import normalize_columns
+from functions import data, month, helpers
 
 def setConfig(uploaded_file, sheet_name):
     # ---------------------------------------------------------
@@ -25,15 +23,15 @@ def setConfig(uploaded_file, sheet_name):
         st.stop()
 
 
-    df = normalize_columns(df)
+    df = helpers.normalize_columns(df)
 
 
     # ---------------------------------------------------------
     # COLUMN DETECTION
     # ---------------------------------------------------------
 
-    detected_month = detect_month_column(df)
-    detected_quantity = detect_quantity_column(df)
+    detected_month = month.detect_month_column(df)
+    detected_quantity = month.detect_quantity_column(df)
 
     st.sidebar.subheader("Columns")
 
@@ -61,14 +59,14 @@ def setConfig(uploaded_file, sheet_name):
     # PREPARE DATA
     # ---------------------------------------------------------
 
-    data = prepare_data(
+    prepare = data.prepare_data(
         df,
         month_column,
         quantity_column
     )
 
 
-    if data.empty:
+    if prepare.empty:
         st.error(
             "No valid month/quantity data was found. "
             "Check the selected columns."
@@ -76,4 +74,4 @@ def setConfig(uploaded_file, sheet_name):
 
         st.stop()
 
-    return data
+    return prepare

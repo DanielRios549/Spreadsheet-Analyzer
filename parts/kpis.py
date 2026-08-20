@@ -61,7 +61,7 @@ def kpisView(data):
 
     col5.metric(
         "Overall Growth",
-        f"{overall_growth:.1f}%"
+        f"{overall_growth:.2f}%"
     )
 
     return {

@@ -10,7 +10,6 @@ def insightsView(data, kpis: dict):
     largest_decrease = data.loc[
         data["Variação"].idxmin()
     ]
-    print(kpis)
 
     st.write(
         f"🔹 **Highest quantity:** "

@@ -24,5 +24,5 @@ def trendView(data):
 
     st.plotly_chart(
         fig_trend,
-        width=True
+        width='stretch'
     )

@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-def dataView(data):
+def tableView(data):
     # ---------------------------------------------------------
     # DATA TABLE
     # ---------------------------------------------------------
@@ -18,7 +18,7 @@ def dataView(data):
         "Variação"
     ].map(
         lambda x:
-        f"{x:.1f}%"
+        f"{x:.2f}%"
         if pd.notna(x)
         else "-"
     )
@@ -27,6 +27,6 @@ def dataView(data):
         display_data[
             ["Mês", "Quantidade", "Variação"]
         ],
-        width=True,
+        width='stretch',
         hide_index=True
     )

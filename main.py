@@ -1,74 +1,86 @@
 import streamlit as st
 import pandas as pd
+from pathlib import Path
 # from openpyxl import load_workbook
-from functions.data import create_excel
+import parts
+import functions
 from config import setConfig
-from parts import kpisView, quantityView, dataView, insightsView, variationView, trendView
+
 
 # ---------------------------------------------------------
-# CONFIGURATION
+# Spreadsheet Analyzer
 # ---------------------------------------------------------
+
+title = "Spreadsheet Analyzer"
 
 st.set_page_config(
-    page_title="Spreadsheet Analyzer",
+    page_title=title,
     page_icon="📊",
     layout="wide"
 )
 
-st.title("📊 Spreadsheet Analyzer")
+st.title(f"📊 {title}")
 st.markdown(
     "Upload an Excel spreadsheet and analyze quantities, monthly trends "
     "and variations."
 )
 
-# ---------------------------------------------------------
-# FILE UPLOAD
-# ---------------------------------------------------------
+base_folder = Path("data") # TODO: Add Env Var
+files = base_folder.glob("*")
+pages = []
 
-uploaded_file = st.file_uploader(
-    "📁 Upload your Excel file",
-    type=["xlsx", "xlsm"]
-)
-
-if uploaded_file is None:
-
+if not base_folder.exists():
     st.info(
-        "Upload an Excel spreadsheet to start the analysis."
+        "The base folder does not exist."
     )
-
-    st.markdown("""
-### Example
-
-Your spreadsheet can look like:
-
-| Mês | Quantidade |
-|---|---:|
-| Janeiro | 5.943 |
-| Fevereiro | 6.459 |
-| Março | 8.230 |
-| Abril | 8.300 |
-| Maio | 8.200 |
-| Junho | 9.354 |
-| Julho | 7.880 |
-| Agosto | |
-| Setembro | |
-""")
 
     st.stop()
 
 
+for subfolder in sorted(base_folder.iterdir()):
+    if subfolder.is_dir():
+
+        pages.append(subfolder)
+
+folder = Path(f"{base_folder}/2026")
+files = folder.glob("*.xlsx")
+stats: list[str] = []
+
+for file in files:
+    stats.append(file.name)
+
+
+if len(stats) < 1:
+    st.info(
+        "The folder needs at least one Excel file to start the analysis."
+    )
+
+    st.stop()
+
+
+tab_key = "active_tab"
+
+if tab_key not in st.session_state:
+    st.session_state[tab_key] = stats[5]
+
+
+st.tabs(stats, key=tab_key, on_change="rerun", default=stats[5])
+
+
 # ---------------------------------------------------------
-# READ EXCEL
+# READ EXCEL FILE
 # ---------------------------------------------------------
 
 try:
+    file_name = st.session_state[tab_key]
+    current_file = Path(f"{folder}/{file_name}")
+
     excel_data = pd.ExcelFile(
-        uploaded_file,
+        current_file,
         engine="openpyxl"
     )
 
 except Exception as e:
-
     st.error(
         f"Could not read the Excel file: {e}"
     )
@@ -80,21 +92,21 @@ except Exception as e:
 # SIDEBAR
 # ---------------------------------------------------------
 
-st.sidebar.header("⚙️ Configuration")
+st.sidebar.header("Year")
 
 sheet_name = st.sidebar.selectbox(
     "Worksheet",
     excel_data.sheet_names
 )
 
-data = setConfig(uploaded_file, sheet_name)
-kpis = kpisView(data)
+data = setConfig(current_file, sheet_name)
+kpis = parts.kpisView(data)
 
-dataView(data)
-quantityView(data)
-trendView(data)
-variationView(data)
-insightsView(data, kpis)
+parts.tableView(data)
+parts.quantityView(data)
+parts.trendView(data)
+parts.variationView(data)
+parts.insightsView(data, kpis)
 
 
 # ---------------------------------------------------------
@@ -103,7 +115,7 @@ insightsView(data, kpis)
 
 st.subheader("⬇️ Export")
 
-excel_output = create_excel(data)
+excel_output = functions.create_excel(data)
 
 st.download_button(
     label="📥 Download analyzed Excel",
