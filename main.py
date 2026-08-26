@@ -19,7 +19,8 @@ st.set_page_config(
 
 st.title(f"📊 {title}")
 st.markdown(
-    "Upload an Excel spreadsheet and analyze quantities, monthly trends "
+    "Select a folder containning a set of Excel spreadsheet"
+    "to analyze quantities, monthly trends "
     "and variations."
 )
 
