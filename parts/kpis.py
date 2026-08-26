@@ -56,7 +56,9 @@ def kpisView(data):
     col4.metric(
         "Lowest",
         f"{minimum:,.0f}",
-        min_month
+        min_month,
+        delta_color="red",
+        delta_arrow="down"
     )
 
     col5.metric(
